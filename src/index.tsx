@@ -21,7 +21,7 @@ type Env = {
 
 // تعریف اپلیکیشن Frog
 export const app = new Frog<Env, NeynarVariables>({
-  title: "Frog Frame",
+  title: "Degen State",
   imageAspectRatio: "1:1",
   imageOptions: {
     fonts: [
