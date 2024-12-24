@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "frog dev"
-"start": "ts-node src/index.tsx"
+    "dev": "frog dev",
+    "start": "ts-node src/index.tsx"
   },
   "dependencies": {
     "@hono/node-server": "latest",
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
     "typescript": "latest"
   }
 }
