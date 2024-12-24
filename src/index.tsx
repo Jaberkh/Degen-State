@@ -132,7 +132,7 @@ app.frame("/", async (c) => {
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://degenstate.onrender.com?fid=${encodeURIComponent(
+  const page2Url = `https://2ded-5-211-61-124.ngrok-free.app?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
   
