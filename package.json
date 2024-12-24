@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "frog dev",
-  "start": "ts-node src/index.tsx"
+  "start": "ts-node-esm src/index.tsx"
   },
   "dependencies": {
     "@hono/node-server": "latest",
