@@ -8,7 +8,7 @@ const app = new Frog({
     apiUrl: "https://hubs.airstack.xyz",
     fetchOptions: {
       headers: {
-        "x-airstack-hubs": "YOUR_AIRSTACK_API_KEY",
+        "x-airstack-hubs": "1086d01a060154d96a28f3eab086553de",
       }
     }
   }});
