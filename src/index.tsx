@@ -13,6 +13,11 @@ if (!AIRSTACK_API_KEY) {
   console.error("AIRSTACK_API_KEY is not defined in the environment variables");
   throw new Error("AIRSTACK_API_KEY is missing");
 }
+const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
+if (!NEYNAR_API_KEY) {
+  console.error("NEYNAR_API_KEY is not defined in the environment variables");
+  throw new Error("NEYNAR_API_KEY is missing");
+}
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
@@ -28,11 +33,7 @@ interface NeynarVariables {
 type Env = {
   [key: string]: unknown;
 };
-const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
-if (!NEYNAR_API_KEY) {
-  console.error("NEYNAR_API_KEY is not defined in the environment variables");
-  throw new Error("NEYNAR_API_KEY is missing");
-}
+
 
 // تعریف اپلیکیشن Frog
 export const app = new Frog<Env, NeynarVariables>({
@@ -58,7 +59,7 @@ export const app = new Frog<Env, NeynarVariables>({
 })
   .use(
     neynar({
-      apiKey: "4FD00862-2B60-4F72-A7E6-58B7BDDF09BD", // کلید API برای Neynar
+      apiKey: NEYNAR_API_KEY, // کلید API برای Neynar
       features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
     })
   )
