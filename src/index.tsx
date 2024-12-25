@@ -1,7 +1,7 @@
-import { serve } from "@hono/node-server/.";
+import { serve } from "@hono/node-server";
+
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
-import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
 
 // تعریف متغیرهای Neynar
@@ -305,8 +305,8 @@ app.frame("/", async (c) => {
   });
 });
 
-devtools(app, { serveStatic });
-const port = parseInt(process.env.PORT || "3000", 10); // تعیین پورت
+
+const port = parseInt(process.env.PORT || "3000", 10);
 serve(app).listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

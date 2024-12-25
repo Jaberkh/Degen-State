@@ -1,7 +1,7 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "frog/jsx/jsx-runtime";
+import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
-import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
 // تعریف اپلیکیشن Frog
 export const app = new Frog({
@@ -99,7 +99,7 @@ app.frame("/", async (c) => {
     const pfpUrl = params.get("pfpUrl") || c.var.interactor?.pfpUrl || "";
     let points = null;
     let lastTipAllowance = null;
-    const page2Url = `https://2ded-5-211-61-124.ngrok-free.app?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
+    const page2Url = `https://cb83-5-211-61-124.ngrok-free.app?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
     // لینک اصلی کست
     const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent("Check Your Degen State\n\nFrame By @jeyloo")}&embeds[]=${encodeURIComponent(page2Url)}`;
     // لینک کوتاه‌شده
@@ -204,4 +204,7 @@ app.frame("/", async (c) => {
         ],
     });
 });
-devtools(app, { serveStatic });
+const port = parseInt(process.env.PORT || "3000", 10);
+serve(app).listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
