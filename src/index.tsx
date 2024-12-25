@@ -203,11 +203,11 @@ app.frame("/", async (c) => {
         <p
           style={{
             color: "cyan",
-            fontSize: "50px",
+            fontSize: "45px",
             fontWeight: "700",
             position: "absolute",
             top: "10%",
-            left: "55.5%",
+            left: "60%",
             transform: "translate(-50%, -50%)",
           }}
         >
@@ -217,11 +217,11 @@ app.frame("/", async (c) => {
         <p
           style={{
             color: "yellow",
-            fontSize: "15px",
+            fontSize: "18px",
             fontWeight: "500",
             position: "absolute",
             top: "20%",
-            left: "57%",
+            left: "55.5%",
             transform: "translate(-50%, -50%)",
           }}
         >
