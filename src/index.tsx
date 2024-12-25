@@ -4,16 +4,16 @@ import { neynar } from "frog/middlewares";
 import { serve } from "@hono/node-server";
 import dotenv from "dotenv";
 
-
+// بارگذاری متغیرهای محیطی از فایل .env
 dotenv.config();
 
-
+// بررسی کلید API
 const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
 if (!AIRSTACK_API_KEY) {
   console.error("AIRSTACK_API_KEY is not defined in the environment variables");
   throw new Error("AIRSTACK_API_KEY is missing");
 }
-
+// تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
     fid: string;
@@ -21,10 +21,10 @@ interface NeynarVariables {
     pfpUrl: string;
   };
   cast?: any;
-  [key: string]: any; 
+  [key: string]: any; // برای سازگاری با Schema
 }
 
-
+// تعریف یک تایپ عمومی برای Env
 type Env = {
   [key: string]: unknown;
 };
@@ -34,7 +34,7 @@ if (!NEYNAR_API_KEY) {
   throw new Error("NEYNAR_API_KEY is missing");
 }
 
-
+// تعریف اپلیکیشن Frog
 export const app = new Frog<Env, NeynarVariables>({
   title: "Degen State",
   imageAspectRatio: "1:1",
@@ -43,7 +43,7 @@ export const app = new Frog<Env, NeynarVariables>({
       {
         name: "Lilita One",
         weight: 400,
-        source: "google", 
+        source: "google", // بارگذاری فونت از Google Fonts
       },
     ],
   },
@@ -51,7 +51,7 @@ export const app = new Frog<Env, NeynarVariables>({
     apiUrl: "https://hubs.airstack.xyz",
     fetchOptions: {
       headers: {
-        "x-airstack-hubs": AIRSTACK_API_KEY, 
+        "x-airstack-hubs": AIRSTACK_API_KEY, // استفاده از کلید API
       },
     },
   },
@@ -64,6 +64,7 @@ export const app = new Frog<Env, NeynarVariables>({
   )
   .use("/*", serveStatic({ root: "./public" }));
 
+// درخواست اطلاعات از API Points
 async function fetchUserPoints(fid: string | number, season: string = "current") {
   const apiUrl = `https://api.degen.tips/airdrop2/${season}/points?fid=${fid.toString()}`;
   try {
@@ -81,7 +82,7 @@ async function fetchUserPoints(fid: string | number, season: string = "current")
   }
 }
 
-
+// درخواست اطلاعات از API Allowances
 async function fetchUserAllowances(fid: string | number) {
   const apiUrl = `https://api.degen.tips/airdrop2/allowances?fid=${fid.toString()}`;
   try {
@@ -92,14 +93,14 @@ async function fetchUserAllowances(fid: string | number) {
     }
     const data = await response.json();
     console.log("Fetched Points Data:", JSON.stringify(data, null, 2));
-
+    // مرتب‌سازی داده‌ها بر اساس تاریخ (به صورت نزولی)
     const sortedData = data.sort(
       (a: { snapshot_day: string }, b: { snapshot_day: string }) =>
         new Date(b.snapshot_day).getTime() - new Date(a.snapshot_day).getTime()
     );
     
 
-
+    // انتخاب روز آخر
     const lastDay = sortedData[0];
     if (lastDay) {
       console.log(
@@ -110,14 +111,14 @@ async function fetchUserAllowances(fid: string | number) {
 
     }
 
-    return lastDay; 
+    return lastDay; // بازگشت روز آخر
   } catch (error) {
     console.error("Error fetching user allowances:", error);
     return null;
   }
 }
 
-
+// نمایش تنها صفحه دوم
 app.frame("/", async (c) => {
   const params = new URLSearchParams(c.req.url.split("?")[1]);
   const fid = params.get("fid") || c.var.interactor?.fid || "FID Not Available";
@@ -131,11 +132,12 @@ app.frame("/", async (c) => {
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
   
-
+  // لینک اصلی کست
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
     "Check Your Degen State\n\nFrame By @jeyloo"
   )}&embeds[]=${encodeURIComponent(page2Url)}`;
 
+  // دریافت اطلاعات Points و Allowances
   if (fid !== "FID Not Available") {
     const pointsData = await fetchUserPoints(fid);
     if (Array.isArray(pointsData) && pointsData.length > 0) {
@@ -183,7 +185,7 @@ app.frame("/", async (c) => {
           fontFamily: "'Lilita One'",
         }}
       >
-        {/* Second Page*/}
+        {/* تصویر صفحه دوم */}
         <img
           src="https://i.imgur.com/XznXt9o.png"
           alt="Degen State - Page 2"
@@ -191,11 +193,11 @@ app.frame("/", async (c) => {
             width: "100%",
             height: "100%",
             objectFit: "contain",
-            zIndex: 1, 
+            zIndex: 1, // تصویر را در بالاترین لایه قرار می‌دهد
             position: "relative",
           }}
         />
-        {/* PFP */}
+        {/* نمایش تصویر PFP */}
         {pfpUrl && (
           <img
             src={pfpUrl}
@@ -212,7 +214,7 @@ app.frame("/", async (c) => {
             }}
           />
         )}
-        {/* Username */}
+        {/* نمایش Username */}
         <p
           style={{
             color: "cyan",
@@ -226,7 +228,7 @@ app.frame("/", async (c) => {
         >
           {username}
         </p>
-        {/* FID */}
+        {/* نمایش FID */}
         <p
           style={{
             color: "yellow",
@@ -240,7 +242,7 @@ app.frame("/", async (c) => {
         >
           {fid}
         </p>
-        {/* Points */}
+        {/* نمایش Points */}
         <p
           style={{
             color: points === "N/A" || points === "0"? "red" : "purple",
@@ -254,7 +256,7 @@ app.frame("/", async (c) => {
         >
           {points || "0"}
         </p>
-        {/* Tip Allowance */}
+        {/* نمایش Tip Allowance */}
         {lastTipAllowance && (
           <>
             <p
@@ -301,15 +303,15 @@ app.frame("/", async (c) => {
       </div>
     ),
     intents: [
-      <Button value="page2">My State</Button>, 
-      <Button.Link href={longComposeCastUrl}>Share</Button.Link>,
+      <Button value="page2">My State</Button>, // دکمه My State
+      <Button.Link href={longComposeCastUrl}>Share</Button.Link>, // دکمه Share
     ],
   });
 });
 
 const port = process.env.PORT || 3000;
 
-
+// اطمینان از استفاده صحیح از عدد به عنوان پورت
 serve(app);
 
 console.log(`Server is running on port ${port}`);
