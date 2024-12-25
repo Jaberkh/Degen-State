@@ -273,10 +273,13 @@ app.frame("/", async (c) => {
   });
 });
 
-// تنظیم پورت و اجرا
+// ابزارهای توسعه
 devtools(app, { serveStatic });
 
+// تنظیم پورت و اجرای سرور
 const port = parseInt(process.env.PORT || "3000", 10); // استفاده از متغیر محیطی PORT
+
+// اجرای سرور با استفاده از @hono/node-server
 serve(app).listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
