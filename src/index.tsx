@@ -75,10 +75,11 @@ declare module "frog" {
 // افزودن میدلور neynar به اپلیکیشن Frog
 app.use(
   neynar({
-    apiKey: NEYNAR_API_KEY, // کلید API برای Neynar
-    features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
+    apiKey: "NEYNAR_FROG_FM", // کلید API برای Neynar
+    features: ["interactor", "cast"], // فعال کردن ویژگی‌ها
   })
 );
+
 
 
 
