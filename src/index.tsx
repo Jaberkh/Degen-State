@@ -1,4 +1,5 @@
 import { serveStatic } from "@hono/node-server/serve-static";
+import { serve } from "@hono/node-server";
 import { Button, Frog } from "frog";
 import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
@@ -103,7 +104,7 @@ app.frame("/", async (c) => {
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://5027-79-127-240-45.ngrok-free.app?fid=${encodeURIComponent(
+  const page2Url = `https://degenstate1.onrender.com?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
   
@@ -272,5 +273,11 @@ app.frame("/", async (c) => {
   });
 });
 
-// ابزارهای توسعه
+// تنظیم پورت و اجرا
+const port = parseInt(process.env.PORT || "3000", 10);
+
+serve(app).listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
 devtools(app, { serveStatic });
