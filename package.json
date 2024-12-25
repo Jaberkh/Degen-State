@@ -4,18 +4,16 @@
   "type": "module",
   "scripts": {
     "dev": "frog dev",
-    "build": "tsc", 
+    "build": "tsc",
     "start": "node build/index.js"
   },
   "dependencies": {
     "@hono/node-server": "latest",
     "frog": "latest",
-    "hashids": "^2.3.0",
     "hono": "^4"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
-    "ts-node": "^10.9.2",
     "typescript": "latest"
   }
 }
