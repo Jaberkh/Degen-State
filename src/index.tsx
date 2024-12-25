@@ -62,7 +62,6 @@ async function fetchUserAllowances(fid: string | number) {
       (a: { snapshot_day: string }, b: { snapshot_day: string }) =>
         new Date(b.snapshot_day).getTime() - new Date(a.snapshot_day).getTime()
     );
-    
 
     // انتخاب روز آخر
     const lastDay = sortedData[0];
@@ -72,43 +71,11 @@ async function fetchUserAllowances(fid: string | number) {
         `Date: ${lastDay.snapshot_day}, Tip Allowance: ${lastDay.tip_allowance}, Remaining Tip Allowance: ${lastDay.remaining_tip_allowance}`
       );
       console.log("Last Snapshot Date:", sortedData[0]?.snapshot_day);
-
     }
 
     return lastDay; // بازگشت روز آخر
   } catch (error) {
     console.error("Error fetching user allowances:", error);
-    return null;
-  }
-}
-
-
-// تعریف تابع کوتاه‌کننده لینک
-async function shortenUrl(longUrl: string): Promise<string | null> {
-  const bitlyAccessToken = "YOUR_BITLY_ACCESS_TOKEN"; // جایگزین با Access Token
-  const apiUrl = "https://api-ssl.bitly.com/v4/shorten";
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${bitlyAccessToken}`,
-      },
-      body: JSON.stringify({
-        long_url: longUrl,
-      }),
-    });
-
-    if (!response.ok) {
-      console.error(`Bitly API Error: ${response.status} ${response.statusText}`);
-      return null;
-    }
-
-    const data = await response.json();
-    return data.link; // لینک کوتاه‌شده
-  } catch (error) {
-    console.error("Error shortening URL:", error);
     return null;
   }
 }
@@ -123,17 +90,16 @@ app.frame("/", async (c) => {
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://6a5e-79-127-240-45.ngrok-free.app?fid=${encodeURIComponent(
+  const page2Url = `https://degen-state-1.onrender.com?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
-  
+
   // لینک اصلی کست
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
     "Check Your Degen State\n\nFrame By @jeyloo"
   )}&embeds[]=${encodeURIComponent(page2Url)}`;
-  
-  // لینک کوتاه‌شده
-  const composeCastUrl = await shortenUrl(longComposeCastUrl) || longComposeCastUrl;
+
+  const composeCastUrl = longComposeCastUrl; // لینک مستقیم استفاده می‌شود
 
   // دریافت اطلاعات Points و Allowances
   if (fid !== "FID Not Available") {
@@ -304,4 +270,3 @@ createServer(async (req, res) => {
 }).listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
