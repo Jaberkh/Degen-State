@@ -33,14 +33,7 @@ export const app = new Frog<Env, NeynarVariables>({
         source: "google", // بارگذاری فونت از Google Fonts
       },
     ],
-  },hub: {
-    apiUrl: "https://hubs.airstack.xyz",
-    fetchOptions: {
-      headers: {
-        "x-airstack-hubs": "1086d01a060154d96a28f3eab086553de",
-      }
-    }
-  }})
+  })
   .use(
     neynar({
       apiKey: "NEYNAR_FROG_FM", // کلید API برای Neynar
