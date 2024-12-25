@@ -207,7 +207,7 @@ app.frame("/", async (c) => {
             fontWeight: "700",
             position: "absolute",
             top: "10%",
-            left: "60%",
+            left: "55%",
             transform: "translate(-50%, -50%)",
           }}
         >
