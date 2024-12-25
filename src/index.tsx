@@ -1,29 +1,42 @@
-import { createServer } from "http";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
+import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
-import { Readable } from "stream";
 
-// تابع کمکی برای تبدیل `IncomingMessage` به `Request`
-const toFetchRequest = (req: any): Request => {
-  const url = `http://${req.headers.host}${req.url}`;
-  const headers = new Headers(req.headers as any);
-  const body =
-    req.method === "GET" || req.method === "HEAD"
-      ? null
-      : Readable.toWeb(req) as any;
-  return new Request(url, { method: req.method, headers, body });
+// تعریف متغیرهای Neynar
+interface NeynarVariables {
+  interactor?: {
+    fid: string;
+    username: string;
+    pfpUrl: string;
+  };
+  cast?: any;
+  [key: string]: any; // برای سازگاری با Schema
+}
+
+// تعریف یک تایپ عمومی برای Env
+type Env = {
+  [key: string]: unknown;
 };
 
 // تعریف اپلیکیشن Frog
-const app = new Frog({
+export const app = new Frog<Env, NeynarVariables>({
   title: "Degen State",
   imageAspectRatio: "1:1",
+  imageOptions: {
+    fonts: [
+      {
+        name: "Lilita One",
+        weight: 400,
+        source: "google", // بارگذاری فونت از Google Fonts
+      },
+    ],
+  },
 })
   .use(
     neynar({
-      apiKey: "NEYNAR_FROG_FM",
-      features: ["interactor", "cast"],
+      apiKey: "NEYNAR_FROG_FM", // کلید API برای Neynar
+      features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
     })
   )
   .use("/*", serveStatic({ root: "./public" }));
@@ -62,6 +75,7 @@ async function fetchUserAllowances(fid: string | number) {
       (a: { snapshot_day: string }, b: { snapshot_day: string }) =>
         new Date(b.snapshot_day).getTime() - new Date(a.snapshot_day).getTime()
     );
+    
 
     // انتخاب روز آخر
     const lastDay = sortedData[0];
@@ -71,6 +85,7 @@ async function fetchUserAllowances(fid: string | number) {
         `Date: ${lastDay.snapshot_day}, Tip Allowance: ${lastDay.tip_allowance}, Remaining Tip Allowance: ${lastDay.remaining_tip_allowance}`
       );
       console.log("Last Snapshot Date:", sortedData[0]?.snapshot_day);
+
     }
 
     return lastDay; // بازگشت روز آخر
@@ -93,13 +108,11 @@ app.frame("/", async (c) => {
   const page2Url = `https://degen-state-1.onrender.com?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
-
+  
   // لینک اصلی کست
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
     "Check Your Degen State\n\nFrame By @jeyloo"
   )}&embeds[]=${encodeURIComponent(page2Url)}`;
-
-  const composeCastUrl = longComposeCastUrl; // لینک مستقیم استفاده می‌شود
 
   // دریافت اطلاعات Points و Allowances
   if (fid !== "FID Not Available") {
@@ -142,7 +155,7 @@ app.frame("/", async (c) => {
         {/* تصویر صفحه دوم */}
         <img
           src="https://i.imgur.com/XznXt9o.png"
-          alt="Frog Frame - Page 2"
+          alt="Degen State - Page 2"
           style={{
             width: "100%",
             height: "100%",
@@ -256,17 +269,9 @@ app.frame("/", async (c) => {
     ),
     intents: [
       <Button value="page2">My State</Button>, // دکمه My State
-      <Button.Link href={composeCastUrl}>Share</Button.Link>, // دکمه Share
+      <Button.Link href={longComposeCastUrl}>Share</Button.Link>, // دکمه Share
     ],
   });
 });
 
-const port = process.env.PORT || 3000;
-createServer(async (req, res) => {
-  const request = toFetchRequest(req); // تبدیل IncomingMessage به Request
-  const response = await app.fetch(request);
-  res.writeHead(response.status, Object.fromEntries(response.headers));
-  res.end(await response.text());
-}).listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+devtools(app, { serveStatic });
