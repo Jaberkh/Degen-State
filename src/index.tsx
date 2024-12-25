@@ -1,42 +1,29 @@
+import { createServer } from "http";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
-import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
+import { Readable } from "stream";
 
-// تعریف متغیرهای Neynar
-interface NeynarVariables {
-  interactor?: {
-    fid: string;
-    username: string;
-    pfpUrl: string;
-  };
-  cast?: any;
-  [key: string]: any; // برای سازگاری با Schema
-}
-
-// تعریف یک تایپ عمومی برای Env
-type Env = {
-  [key: string]: unknown;
+// تابع کمکی برای تبدیل `IncomingMessage` به `Request`
+const toFetchRequest = (req: any): Request => {
+  const url = `http://${req.headers.host}${req.url}`;
+  const headers = new Headers(req.headers as any);
+  const body =
+    req.method === "GET" || req.method === "HEAD"
+      ? null
+      : Readable.toWeb(req) as any;
+  return new Request(url, { method: req.method, headers, body });
 };
 
 // تعریف اپلیکیشن Frog
-export const app = new Frog<Env, NeynarVariables>({
+const app = new Frog({
   title: "Degen State",
   imageAspectRatio: "1:1",
-  imageOptions: {
-    fonts: [
-      {
-        name: "Lilita One",
-        weight: 400,
-        source: "google", // بارگذاری فونت از Google Fonts
-      },
-    ],
-  },
 })
   .use(
     neynar({
-      apiKey: "NEYNAR_FROG_FM", // کلید API برای Neynar
-      features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
+      apiKey: "NEYNAR_FROG_FM",
+      features: ["interactor", "cast"],
     })
   )
   .use("/*", serveStatic({ root: "./public" }));
@@ -308,4 +295,13 @@ app.frame("/", async (c) => {
   });
 });
 
-devtools(app, { serveStatic });
+const port = process.env.PORT || 3000;
+createServer(async (req, res) => {
+  const request = toFetchRequest(req); // تبدیل IncomingMessage به Request
+  const response = await app.fetch(request);
+  res.writeHead(response.status, Object.fromEntries(response.headers));
+  res.end(await response.text());
+}).listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
