@@ -3,25 +3,23 @@
     "target": "ESNext",
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "jsxImportSource": "frog/jsx",
-
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
-    /* Build output */
-    "outDir": "build", // مسیر خروجی فایل‌های کامپایل شده
+    "outDir": "build", // خروجی همه فایل‌ها در پوشه build
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"] // مسیرهای داخلی از src تنظیم می‌شوند
+    }
   },
-  "include": ["src/**/*", "server.ts"], // اطمینان از گنجاندن server.ts
+  "include": ["src/**/*", "server.ts"], // اضافه کردن همه فایل‌های مورد نیاز
   "exclude": ["node_modules"]
 }
