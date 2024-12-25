@@ -1,7 +1,6 @@
-import { serve } from "@hono/node-server";
-
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
+import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
 
 // تعریف متغیرهای Neynar
@@ -70,12 +69,13 @@ async function fetchUserAllowances(fid: string | number) {
       return null;
     }
     const data = await response.json();
-
+    console.log("Fetched Points Data:", JSON.stringify(data, null, 2));
     // مرتب‌سازی داده‌ها بر اساس تاریخ (به صورت نزولی)
     const sortedData = data.sort(
       (a: { snapshot_day: string }, b: { snapshot_day: string }) =>
         new Date(b.snapshot_day).getTime() - new Date(a.snapshot_day).getTime()
     );
+    
 
     // انتخاب روز آخر
     const lastDay = sortedData[0];
@@ -84,6 +84,8 @@ async function fetchUserAllowances(fid: string | number) {
         `Last Allowances for FID ${fid}:`,
         `Date: ${lastDay.snapshot_day}, Tip Allowance: ${lastDay.tip_allowance}, Remaining Tip Allowance: ${lastDay.remaining_tip_allowance}`
       );
+      console.log("Last Snapshot Date:", sortedData[0]?.snapshot_day);
+
     }
 
     return lastDay; // بازگشت روز آخر
@@ -92,6 +94,7 @@ async function fetchUserAllowances(fid: string | number) {
     return null;
   }
 }
+
 
 // تعریف تابع کوتاه‌کننده لینک
 async function shortenUrl(longUrl: string): Promise<string | null> {
@@ -133,7 +136,7 @@ app.frame("/", async (c) => {
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://degenstate.onrender.com?fid=${encodeURIComponent(
+  const page2Url = `https://6a5e-79-127-240-45.ngrok-free.app?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
   
@@ -305,8 +308,4 @@ app.frame("/", async (c) => {
   });
 });
 
-
-const port = parseInt(process.env.PORT || "3000", 10);
-serve(app).listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+devtools(app, { serveStatic });

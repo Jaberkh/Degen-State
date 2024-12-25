@@ -17,17 +17,5 @@
     "@types/node": "^22.10.2",
     "ts-node": "^10.9.2",
     "typescript": "latest"
-  },
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "outDir": "./build"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  }
 }
-
