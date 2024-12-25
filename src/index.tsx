@@ -2,9 +2,6 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
 import { neynar } from "frog/middlewares";
 import { serve } from "@hono/node-server";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const AIRSTACK_API_KEY = 1086d01a060154d96a28f3eab086553de;
 if (!AIRSTACK_API_KEY) {
