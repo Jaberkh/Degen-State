@@ -213,7 +213,7 @@ app.frame("/", async (c) => {
         <p
           style={{
             color: "cyan",
-            fontSize: "45px",
+            fontSize: username.length > 5 ? "40px" : "45px", 
             fontWeight: "700",
             position: "absolute",
             top: "10%",
