@@ -160,6 +160,8 @@ app.frame("/", async (c) => {
             width: "100%",
             height: "100%",
             objectFit: "contain",
+            zIndex: 1, // تصویر را در بالاترین لایه قرار می‌دهد
+            position: "relative",
           }}
         />
         {/* نمایش تصویر PFP */}
