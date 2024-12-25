@@ -1,7 +1,7 @@
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
-import { devtools } from "frog/dev";
 import { neynar } from "frog/middlewares";
+import { serve } from "@hono/node-server";
 
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
@@ -276,4 +276,9 @@ app.frame("/", async (c) => {
   });
 });
 
-devtools(app, { serveStatic });
+const port = process.env.PORT || 3000;
+
+// اطمینان از استفاده صحیح از عدد به عنوان پورت
+serve(app);
+
+console.log(`Server is running on port ${port}`);
