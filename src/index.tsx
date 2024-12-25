@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
+const AIRSTACK_API_KEY = 1086d01a060154d96a28f3eab086553de;
 if (!AIRSTACK_API_KEY) {
   console.error("AIRSTACK_API_KEY is not defined in the environment variables");
   throw new Error("AIRSTACK_API_KEY is missing");
