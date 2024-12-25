@@ -58,8 +58,8 @@ export const app = new Frog<Env, NeynarVariables>({
 })
   .use(
     neynar({
-      apiKey: NEYNAR_API_KEY, 
-      features: ["interactor", "cast"], 
+      apiKey: "4FD00862-2B60-4F72-A7E6-58B7BDDF09BD", // کلید API برای Neynar
+      features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
     })
   )
   .use("/*", serveStatic({ root: "./public" }));
