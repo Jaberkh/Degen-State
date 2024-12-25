@@ -143,15 +143,25 @@ app.frame("/", async (c) => {
 
     const lastAllowance = await fetchUserAllowances(fid);
     if (lastAllowance) {
-      const tipped =
-        parseFloat(lastAllowance.tip_allowance) - parseFloat(lastAllowance.remaining_tip_allowance);
+      const tipAllowance = parseFloat(lastAllowance.tip_allowance) || 0;
+      const remainingTipAllowance = parseFloat(lastAllowance.remaining_tip_allowance) || 0;
+      const tipped = tipAllowance - remainingTipAllowance;
+    
       lastTipAllowance = {
-        date: lastAllowance.snapshot_day,
-        tip_allowance: lastAllowance.tip_allowance,
-        remaining_tip_allowance: lastAllowance.remaining_tip_allowance,
+        date: lastAllowance.snapshot_day || "N/A",
+        tip_allowance: tipAllowance.toString(),
+        remaining_tip_allowance: remainingTipAllowance.toString(),
         tipped: Math.round(tipped).toString(),
       };
+    } else {
+      lastTipAllowance = {
+        date: "N/A",
+        tip_allowance: "0",
+        remaining_tip_allowance: "0",
+        tipped: "0",
+      };
     }
+    
   }
 
   return c.res({
@@ -230,7 +240,7 @@ app.frame("/", async (c) => {
         {/* نمایش Points */}
         <p
           style={{
-            color: points === "N/A" ? "red" : "purple",
+            color: points === "N/A" || points === "0"? "red" : "purple",
             fontSize: "45px",
             fontWeight: "1100",
             position: "absolute",
@@ -239,7 +249,7 @@ app.frame("/", async (c) => {
             transform: "translate(-50%, -50%) rotate(15deg)",
           }}
         >
-          {points || "No Points Available"}
+          {points || "0"}
         </p>
         {/* نمایش Tip Allowance */}
         {lastTipAllowance && (
