@@ -99,7 +99,7 @@ app.frame("/", async (c) => {
     const pfpUrl = params.get("pfpUrl") || c.var.interactor?.pfpUrl || "";
     let points = null;
     let lastTipAllowance = null;
-    const page2Url = `https://cb83-5-211-61-124.ngrok-free.app?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
+    const page2Url = `https://degenstate.onrender.com?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
     // لینک اصلی کست
     const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent("Check Your Degen State\n\nFrame By @jeyloo")}&embeds[]=${encodeURIComponent(page2Url)}`;
     // لینک کوتاه‌شده
