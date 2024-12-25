@@ -3,11 +3,15 @@ import { Button, Frog } from "frog";
 import { neynar } from "frog/middlewares";
 import { serve } from "@hono/node-server";
 
-const AIRSTACK_API_KEY = 1086d01a060154d96a28f3eab086553de;
-if (!AIRSTACK_API_KEY) {
-  console.error("AIRSTACK_API_KEY is not defined in the environment variables");
-  throw new Error("AIRSTACK_API_KEY is missing");
-}
+const app = new Frog({
+  hub: {
+    apiUrl: "https://hubs.airstack.xyz",
+    fetchOptions: {
+      headers: {
+        "x-airstack-hubs": "YOUR_AIRSTACK_API_KEY",
+      }
+    }
+  }});
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
