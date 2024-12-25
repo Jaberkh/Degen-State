@@ -36,6 +36,7 @@ type Env = {
 
 
 // تعریف اپلیکیشن Frog
+// تعریف اپلیکیشن Frog
 export const app = new Frog<Env, NeynarVariables>({
   title: "Degen State",
   imageAspectRatio: "1:1",
@@ -56,14 +57,33 @@ export const app = new Frog<Env, NeynarVariables>({
       },
     },
   },
-})
-  .use(
-    neynar({
-      apiKey: NEYNAR_API_KEY, // کلید API برای Neynar
-      features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
-    })
-  )
-  .use("/*", serveStatic({ root: "./public" }));
+});
+
+// گسترش ContextVariableMap برای شناسایی interactor
+declare module "frog" {
+  interface ContextVariableMap {
+    interactor?: {
+      fid: string;
+      username: string;
+      pfpUrl: string;
+    };
+    cast?: any;
+  }
+}
+
+
+// افزودن میدلور neynar به اپلیکیشن Frog
+app.use(
+  neynar({
+    apiKey: NEYNAR_API_KEY, // کلید API برای Neynar
+    features: ["interactor", "cast"], // فعال کردن ویژگی‌های موردنیاز
+  })
+);
+
+
+
+  
+  app.use("/*", serveStatic({ root: "./public" }));
 
 // درخواست اطلاعات از API Points
 async function fetchUserPoints(fid: string | number, season: string = "current") {
@@ -121,10 +141,12 @@ async function fetchUserAllowances(fid: string | number) {
 
 // نمایش تنها صفحه دوم
 app.frame("/", async (c) => {
-  const params = new URLSearchParams(c.req.url.split("?")[1]);
-  const fid = params.get("fid") || c.var.interactor?.fid || "FID Not Available";
-  const username = params.get("username") || c.var.interactor?.username || "Username Not Available";
-  const pfpUrl = params.get("pfpUrl") || c.var.interactor?.pfpUrl || "";
+  const interactor = (c.var as any).interactor;
+const fid = interactor?.fid || "FID Not Available";
+const username = interactor?.username || "Username Not Available";
+const pfpUrl = interactor?.pfpUrl || "";
+
+
 
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
