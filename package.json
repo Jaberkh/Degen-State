@@ -1,4 +1,23 @@
 {
+  "name": "degen-state",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "frog dev",
+    "build": "tsc", 
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "latest",
+    "frog": "latest",
+    "hashids": "^2.3.0",
+    "hono": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "latest"
+  },
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
@@ -11,3 +30,4 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
+
