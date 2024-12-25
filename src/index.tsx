@@ -2,17 +2,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
 import { neynar } from "frog/middlewares";
 import { serve } from "@hono/node-server";
-import dotenv from "dotenv";
 
-// بارگذاری متغیرهای محیطی از فایل .env
-dotenv.config();
-
-// بررسی کلید API
-const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
-if (!AIRSTACK_API_KEY) {
-  console.error("AIRSTACK_API_KEY is not defined in the environment variables");
-  throw new Error("AIRSTACK_API_KEY is missing");
-}
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
@@ -41,14 +31,6 @@ export const app = new Frog<Env, NeynarVariables>({
         source: "google", // بارگذاری فونت از Google Fonts
       },
     ],
-  },
-  hub: {
-    apiUrl: "https://hubs.airstack.xyz",
-    fetchOptions: {
-      headers: {
-        "x-airstack-hubs": AIRSTACK_API_KEY, // استفاده از کلید API
-      },
-    },
   },
 })
   .use(
