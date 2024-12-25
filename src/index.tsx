@@ -33,7 +33,7 @@ export const app = new Frog<Env, NeynarVariables>({
         source: "google", // بارگذاری فونت از Google Fonts
       },
     ],
-  }),
+  }
   .use(
     neynar({
       apiKey: "NEYNAR_FROG_FM", // کلید API برای Neynar
