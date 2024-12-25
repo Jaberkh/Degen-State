@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "frog dev",
-    "build": "tsc",
-    "start": "node build/index.js"
+    "dev": "ts-node server.ts", 
+    "build": "tsc",             
+    "start": "node build/server.js" 
   },
   "dependencies": {
     "@hono/node-server": "latest",

@@ -1,4 +1,3 @@
-import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
 import { devtools } from "frog/dev";
@@ -275,11 +274,3 @@ app.frame("/", async (c) => {
 
 // ابزارهای توسعه
 devtools(app, { serveStatic });
-
-// تنظیم پورت و اجرای سرور
-const port = parseInt(process.env.PORT || "3000", 10); // استفاده از متغیر محیطی PORT
-
-// اجرای سرور با استفاده از @hono/node-server
-serve(app).listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
