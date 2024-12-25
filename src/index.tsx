@@ -2,7 +2,15 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Button, Frog } from "frog";
 import { neynar } from "frog/middlewares";
 import { serve } from "@hono/node-server";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
+if (!AIRSTACK_API_KEY) {
+  console.error("AIRSTACK_API_KEY is not defined in the environment variables");
+  throw new Error("AIRSTACK_API_KEY is missing");
+}
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
