@@ -142,11 +142,13 @@ app.frame("/", async (c) => {
         {/* تصویر صفحه دوم */}
         <img
           src="https://i.imgur.com/XznXt9o.png"
-          alt="Frog Frame - Page 2"
+          alt="Degen State - Page 2"
           style={{
             width: "100%",
             height: "100%",
             objectFit: "contain",
+            zIndex: 1, // تصویر را در بالاترین لایه قرار می‌دهد
+            position: "relative",
           }}
         />
         {/* نمایش تصویر PFP */}
