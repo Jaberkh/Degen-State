@@ -3,17 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "ts-node server.ts", 
-    "build": "tsc",             
-    "start": "node build/server.js" 
+    "dev": "frog dev",
+    "build": "tsc", 
+    "start": "node build/index.js"
   },
   "dependencies": {
     "@hono/node-server": "latest",
     "frog": "latest",
+    "hashids": "^2.3.0",
     "hono": "^4"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
     "typescript": "latest"
   }
 }
