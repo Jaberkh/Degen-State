@@ -59,12 +59,7 @@ export const app = new Frog<Env, NeynarVariables>({
   },
 });
 
-app.use(
-  neynar({
-    apiKey: "057737BD-2028-4BC0-BE99-D1359BFD6BFF",
-    features: ["interactor", "cast"],
-  })
-);
+
 
 // گسترش ContextVariableMap برای شناسایی interactor
 declare module "frog" {
