@@ -13,11 +13,7 @@ if (!AIRSTACK_API_KEY) {
   console.error("AIRSTACK_API_KEY is not defined in the environment variables");
   throw new Error("AIRSTACK_API_KEY is missing");
 }
-const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
-if (!NEYNAR_API_KEY) {
-  console.error("NEYNAR_API_KEY is not defined in the environment variables");
-  throw new Error("NEYNAR_API_KEY is missing");
-}
+
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
