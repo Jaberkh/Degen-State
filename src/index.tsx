@@ -145,24 +145,31 @@ async function fetchUserAllowances(fid: string | number) {
 // نمایش تنها صفحه دوم
 app.frame("/", async (c) => {
   const interactor = (c.var as any).interactor;
-const fid = interactor?.fid || "FID Not Available";
-const username = interactor?.username || "Username Not Available";
-const pfpUrl = interactor?.pfpUrl || "";
+  const urlParams = new URLSearchParams(c.req.url.split('?')[1]);
+  const fid = urlParams.get("fid") || interactor?.fid || "FID Not Available";
+  const username = urlParams.get("username") || interactor?.username || "Username Not Available";
+  const pfpUrl = urlParams.get("pfpUrl") || interactor?.pfpUrl || "";
 
 
 
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://degen-state-1.onrender.com?fid=${encodeURIComponent(
+  const page2Url = `https://degen-state-1.onrender.com/?fid=${encodeURIComponent(
     fid
   )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
   
-  // لینک اصلی کست
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
     "Check Your Degen State\n\nFrame By @jeyloo"
   )}&embeds[]=${encodeURIComponent(page2Url)}`;
+  
+  console.log("Generated Cast URL:", longComposeCastUrl);
 
+  console.log("Shared Page2 URL:", page2Url);
+  console.log("FID:", fid);
+  console.log("Username:", username);
+  console.log("PFP URL:", pfpUrl);
+  
   // دریافت اطلاعات Points و Allowances
   if (fid !== "FID Not Available") {
     const pointsData = await fetchUserPoints(fid);
