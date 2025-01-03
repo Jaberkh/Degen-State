@@ -18,6 +18,15 @@ if (!NEYNAR_API_KEY) {
   console.error("NEYNAR_API_KEY is not defined in the environment variables");
   throw new Error("NEYNAR_API_KEY is missing");
 }
+
+// تعریف تابع برای تولید هش منحصر به فرد
+function generateHashId(fid: string): string {
+  const timestamp = Date.now();  // زمان فعلی
+  const randomHash = Math.random().toString(36).substr(2, 9); // تولید یک رشته تصادفی
+  return `${timestamp}-${fid}-${randomHash}`;  // ساخت هش منحصر به فرد
+}
+
+
 // تعریف متغیرهای Neynar
 interface NeynarVariables {
   interactor?: {
@@ -34,8 +43,6 @@ type Env = {
   [key: string]: unknown;
 };
 
-
-// تعریف اپلیکیشن Frog
 // تعریف اپلیکیشن Frog
 export const app = new Frog<Env, NeynarVariables>({
   title: "Degen State",
@@ -44,6 +51,11 @@ export const app = new Frog<Env, NeynarVariables>({
     fonts: [
       {
         name: "Lilita One",
+        weight: 400,
+        source: "google", // بارگذاری فونت از Google Fonts
+      },
+      {
+        name: "Poppins",
         weight: 400,
         source: "google", // بارگذاری فونت از Google Fonts
       },
@@ -59,8 +71,6 @@ export const app = new Frog<Env, NeynarVariables>({
   },
 });
 
-
-
 // گسترش ContextVariableMap برای شناسایی interactor
 declare module "frog" {
   interface ContextVariableMap {
@@ -73,7 +83,6 @@ declare module "frog" {
   }
 }
 
-
 // افزودن میدلور neynar به اپلیکیشن Frog
 app.use(
   neynar({
@@ -84,9 +93,7 @@ app.use(
 
 
 
-
-  
-  app.use("/*", serveStatic({ root: "./public" }));
+app.use("/*", serveStatic({ root: "./public" }));
 
 // درخواست اطلاعات از API Points
 async function fetchUserPoints(fid: string | number, season: string = "current") {
@@ -122,7 +129,6 @@ async function fetchUserAllowances(fid: string | number) {
       (a: { snapshot_day: string }, b: { snapshot_day: string }) =>
         new Date(b.snapshot_day).getTime() - new Date(a.snapshot_day).getTime()
     );
-    
 
     // انتخاب روز آخر
     const lastDay = sortedData[0];
@@ -132,7 +138,6 @@ async function fetchUserAllowances(fid: string | number) {
         `Date: ${lastDay.snapshot_day}, Tip Allowance: ${lastDay.tip_allowance}, Remaining Tip Allowance: ${lastDay.remaining_tip_allowance}`
       );
       console.log("Last Snapshot Date:", sortedData[0]?.snapshot_day);
-
     }
 
     return lastDay; // بازگشت روز آخر
@@ -142,35 +147,140 @@ async function fetchUserAllowances(fid: string | number) {
   }
 }
 
+
+async function fetchTodayTippedUsersWithUsernames(fid: string | number, maxUsers: number = 6) {
+  const apiUrl = `https://api.degen.tips/airdrop2/tips?fid=${fid.toString()}`;
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      console.error(`API Error: ${response.status} ${response.statusText}`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log("Fetched Data:", data); // چاپ داده‌های دریافتی
+
+    const todayDate = new Date().toISOString().split("T")[0];
+    console.log("Today Date:", todayDate);
+
+    // فیلتر کاربران برای روز جاری
+    const todayTips = data.filter((tip: { snapshot_day: string }) => {
+      const tipDate = new Date(tip.snapshot_day).toISOString().split("T")[0];
+      return tipDate === todayDate;
+    });
+
+    console.log("Filtered Today Tips:", todayTips);
+
+    // پردازش کاربران برای دریافت یوزرنیم‌ها
+   const processedUsers = await Promise.all(
+  todayTips.map(async (tip: any) => {
+    console.log(`Fetching username for recipient FID: ${tip.recipient_fid}`);
+    const username = await fetchUsernameByFid(tip.recipient_fid); // دریافت یوزرنیم با API Warpcast
+    console.log(`Fetched username: ${username}`);
+    return {
+      fid: tip.recipient_fid,
+      username: username || "Unknown",
+      tippedAmount: tip.tip_amount,
+      tipCount: tip.tip_count || 1,
+      totalTipped: tip.total_tipped || tip.tip_amount,
+    };
+  })
+);
+
+
+    // مرتب‌سازی بر اساس `totalTipped` (بیشترین به کمترین)
+    processedUsers
+      .sort((a: { totalTipped: number }, b: { totalTipped: number }) => b.totalTipped - a.totalTipped)
+      .slice(0, maxUsers)
+      .forEach((user: { username: string; totalTipped: number }, index: number) => {
+        console.log(`User ${index + 1}: ${user.username}, Total Tipped: ${user.totalTipped}`);
+      });
+
+    // محدود کردن به حداکثر `maxUsers` کاربر
+    const limitedUsers = processedUsers.slice(0, maxUsers);
+
+    // چاپ کاربران در ترمینال
+    console.log("Top Tipped Users:");
+    limitedUsers.forEach((user: { username: any; totalTipped: any; tipCount: any; }, index: number) => {
+      console.log(
+        `${index + 1}. Username: ${user.username}, Total Tipped: ${user.totalTipped}, Tip Count: ${user.tipCount}`
+      );
+    });
+
+    return limitedUsers;
+  } catch (error) {
+    console.error("Error fetching today's tipped users with usernames:", error);
+    return [];
+  }
+}
+
+
+async function fetchUsernameByFid(fid: string | number): Promise<string | null> {
+  const apiUrl = `https://api.warpcast.com/v2/user?fid=${fid}`;
+  try {
+    const response = await fetch(apiUrl, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Warpcast API Error for FID ${fid}: ${response.status} ${response.statusText}`);
+      const errorData = await response.json();
+      console.error("Error details:", JSON.stringify(errorData, null, 2));
+      return null;
+    }
+
+    const data = await response.json();
+    console.log(`Full response for FID ${fid}:`, JSON.stringify(data, null, 2));
+
+    // استخراج username از مسیر صحیح
+    const username = data?.result?.user?.username || null;
+    if (username) {
+      console.log(`Username for FID ${fid}: ${username}`);
+    } else {
+      console.warn(`No username found for FID ${fid}`);
+    }
+    return username;
+  } catch (error) {
+    console.error(`Error fetching username for FID ${fid}:`, error);
+    return null;
+  }
+}
+const hashIdCache: Record<string, string> = {}; // کش ساده برای تست
+
+async function getOrGenerateHashId(fid: string): Promise<string> {
+  if (hashIdCache[fid]) {
+    return hashIdCache[fid];
+  }
+  const newHashId = generateHashId(fid);
+  hashIdCache[fid] = newHashId;
+  return newHashId;
+}
+
+
+
+
+
 // نمایش تنها صفحه دوم
 app.frame("/", async (c) => {
   const interactor = (c.var as any).interactor;
   const urlParams = new URLSearchParams(c.req.url.split('?')[1]);
+
+  // دریافت اطلاعات از URL یا Interactor
   const fid = urlParams.get("fid") || interactor?.fid || "FID Not Available";
   const username = urlParams.get("username") || interactor?.username || "Username Not Available";
   const pfpUrl = urlParams.get("pfpUrl") || interactor?.pfpUrl || "";
 
+  // تولید hashid یکتا
+  const hashId = await getOrGenerateHashId(fid);
 
-
+  // دریافت اطلاعات مرتبط با کاربر
+  const todayTippedUsers = await fetchTodayTippedUsersWithUsernames(fid);
   let points: string | null = null;
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
-  const page2Url = `https://degen-state-1.onrender.com/?fid=${encodeURIComponent(
-    fid
-  )}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}`;
-  
-  const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
-    "Check Your Degen State\n\nFrame By @jeyloo"
-  )}&embeds[]=${encodeURIComponent(page2Url)}`;
-  
-  console.log("Generated Cast URL:", longComposeCastUrl);
-
-  console.log("Shared Page2 URL:", page2Url);
-  console.log("FID:", fid);
-  console.log("Username:", username);
-  console.log("PFP URL:", pfpUrl);
-  
-  // دریافت اطلاعات Points و Allowances
+  // پردازش اطلاعات Points
   if (fid !== "FID Not Available") {
     const pointsData = await fetchUserPoints(fid);
     if (Array.isArray(pointsData) && pointsData.length > 0) {
@@ -183,25 +293,56 @@ app.frame("/", async (c) => {
     if (lastAllowance) {
       const tipAllowance = parseFloat(lastAllowance.tip_allowance) || 0;
       const remainingTipAllowance = parseFloat(lastAllowance.remaining_tip_allowance) || 0;
-      const tipped = tipAllowance - remainingTipAllowance;
-    
+      const tipped = Math.round(tipAllowance - remainingTipAllowance);
+
       lastTipAllowance = {
-        date: lastAllowance.snapshot_day || "N/A",
-        tip_allowance: tipAllowance.toString(),
-        remaining_tip_allowance: remainingTipAllowance.toString(),
-        tipped: Math.round(tipped).toString(),
-      };
-    } else {
-      lastTipAllowance = {
-        date: "N/A",
-        tip_allowance: "0",
-        remaining_tip_allowance: "0",
-        tipped: "0",
+        date: lastAllowance.snapshot_day,
+        tip_allowance: lastAllowance.tip_allowance,
+        remaining_tip_allowance: lastAllowance.remaining_tip_allowance,
+        tipped: tipped.toString(),
       };
     }
-    
   }
 
+  // آماده‌سازی داده‌های محلی
+  const localData = {
+    fid,
+    username,
+    pfpUrl,
+    hashId,
+    points,
+    lastTipAllowance,
+    todayTippedUsers,
+  };
+
+  // ساخت URL‌های صفحه و اشتراک‌گذاری
+  const tippedUsersData = todayTippedUsers
+    .map(
+      (user) =>
+        `fid=${user.fid}&username=${user.username}&tippedAmount=${user.tippedAmount}`
+    )
+    .join("&");
+
+  const page2Url = `https://bab5-79-127-240-45.ngrok-free.app/?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}&${tippedUsersData}`;
+
+  const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
+    "Check Your Degen State\n\nFrame By @jeyloo"
+  )}&embeds[]=${encodeURIComponent(
+    `https://bab5-79-127-240-45.ngrok-free.app/?hashid=${hashId}&fid=${fid}&username=${encodeURIComponent(
+      username
+    )}&pfpUrl=${encodeURIComponent(pfpUrl)}`
+  )}`;
+  
+
+  // چاپ اطلاعات برای بررسی (اختیاری)
+  console.log("Local Data for User:", JSON.stringify(localData, null, 2));
+  console.log("Generated Cast URL:", longComposeCastUrl);
+  console.log("Shared Page2 URL:", page2Url);
+  console.log("Username:", username);
+console.log("Profile Picture URL:", pfpUrl);
+
+
+  // بازگشت پاسخ
   return c.res({
     image: (
       <div
@@ -215,91 +356,116 @@ app.frame("/", async (c) => {
           backgroundColor: "black",
           color: "white",
           fontSize: "20px",
-          fontFamily: "'Lilita One'",
+          fontFamily: "'Lilita One','Poppins'",
         }}
       >
-        {/* تصویر صفحه دوم */}
+        {/* نمایش اطلاعات */}
         <img
-          src="https://i.imgur.com/XznXt9o.png"
+          src="https://i.imgur.com/6975Rof.png"
           alt="Degen State - Page 2"
           style={{
             width: "100%",
             height: "100%",
             objectFit: "contain",
-            zIndex: 1, // تصویر را در بالاترین لایه قرار می‌دهد
+            zIndex: 1,
             position: "relative",
           }}
         />
-        {/* نمایش تصویر PFP */}
+        <div
+          style={{
+            position: "absolute",
+            top: "77%",
+            left: "56%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "550px",
+          }}
+        >
+          {/* کاربران تیپ‌شده */}
+          {todayTippedUsers.slice(0, 6).map((user, index) => (
+            <div
+              key={index}
+              style={{
+                color: "#90caf9",
+                display: "flex",
+                justifyContent: "space-between",
+                width: "120%",
+                marginBottom: "3px",
+              }}
+            >
+              <span style={{ flex: 1, textAlign: "center" }}>{user.fid}</span>
+              <span style={{ flex: 1, textAlign: "center" }}>{user.username}</span>
+              <span style={{ flex: 1, textAlign: "center" }}>{user.tippedAmount}</span>
+            </div>
+          ))}
+        </div>
         {pfpUrl && (
           <img
             src={pfpUrl}
             alt="Profile Picture"
             style={{
-              width: "230px",
-              height: "230px",
+              width: "150px",
+              height: "150px",
               borderRadius: "50%",
               position: "absolute",
-              top: "21%",
-              left: "35%",
+              top: "17%",
+              left: "32%",
               transform: "translate(-50%, -50%)",
               border: "3px solid white",
             }}
           />
         )}
-        {/* نمایش Username */}
         <p
           style={{
             color: "cyan",
-            fontSize: username.length > 5 ? "45px" : "50px", 
+            fontSize: username.length > 5 ? "45px" : "50px",
             fontWeight: "700",
             position: "absolute",
-            top: "10%",
-            left: "55%",
+            top: "5%",
+            left: "50%",
             transform: "translate(-50%, -50%)",
           }}
         >
           {username}
         </p>
-        {/* نمایش FID */}
         <p
           style={{
-            color: "yellow",
+            color: "white",
             fontSize: "18px",
             fontWeight: "500",
             position: "absolute",
-            top: "20%",
-            left: "55.5%",
+            top: "14.3%",
+            left: "46.5%",
             transform: "translate(-50%, -50%)",
           }}
         >
           {fid}
         </p>
-        {/* نمایش Points */}
         <p
           style={{
-            color: points === "N/A" || points === "0"? "red" : "purple",
-            fontSize: "45px",
+            color: "white",
+            fontSize: "50px",
             fontWeight: "1100",
             position: "absolute",
-            top: "37%",
-            left: "67%",
-            transform: "translate(-50%, -50%) rotate(15deg)",
+            top: "28%",
+            left: "55%",
+            transform: "translate(-50%, -50%) rotate(-15deg)",
           }}
         >
           {points || "0"}
         </p>
-        {/* نمایش Tip Allowance */}
         {lastTipAllowance && (
           <>
             <p
               style={{
-                color: "yellow",
-                fontSize: "45px",
+                color: "lightgreen",
+                fontSize: "35px",
                 fontWeight: "700",
                 position: "absolute",
-                top: "48%",
-                left: "50%",
+                top: "39%",
+                left: "31%",
                 transform: "translate(-50%, -50%)",
               }}
             >
@@ -308,11 +474,11 @@ app.frame("/", async (c) => {
             <p
               style={{
                 color: "lime",
-                fontSize: "45px",
-                fontWeight: "700",
+                fontSize: "18px",
+                fontWeight: "50",
                 position: "absolute",
-                top: "68%",
-                left: "50%",
+                top: "49.5%",
+                left: "30%",
                 transform: "translate(-50%, -50%)",
               }}
             >
@@ -320,12 +486,12 @@ app.frame("/", async (c) => {
             </p>
             <p
               style={{
-                color: "darkred",
-                fontSize: "45px",
-                fontWeight: "700",
+                color: "red",
+                fontSize: "18px",
+                fontWeight: "100",
                 position: "absolute",
-                top: "85%",
-                left: "50%",
+                top: "49.5%",
+                left: "70.5%",
                 transform: "translate(-50%, -50%)",
               }}
             >
@@ -336,8 +502,8 @@ app.frame("/", async (c) => {
       </div>
     ),
     intents: [
-      <Button value="page2">My State</Button>, // دکمه My State
-      <Button.Link href={longComposeCastUrl}>Share</Button.Link>, // دکمه Share
+      <Button value="page2">My State</Button>,
+      <Button.Link href={longComposeCastUrl}>Share</Button.Link>,
     ],
   });
 });
