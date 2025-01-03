@@ -323,12 +323,12 @@ app.frame("/", async (c) => {
     )
     .join("&");
 
-  const page2Url = `https://bab5-79-127-240-45.ngrok-free.app/?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}&${tippedUsersData}`;
+  const page2Url = `https://degen-state-1.onrender.com/?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}&${tippedUsersData}`;
 
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
     "Check Your Degen State\n\nFrame By @jeyloo"
   )}&embeds[]=${encodeURIComponent(
-    `https://bab5-79-127-240-45.ngrok-free.app/?hashid=${hashId}&fid=${fid}&username=${encodeURIComponent(
+    `https://degen-state-1.onrender.com/?hashid=${hashId}&fid=${fid}&username=${encodeURIComponent(
       username
     )}&pfpUrl=${encodeURIComponent(pfpUrl)}`
   )}`;
