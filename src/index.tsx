@@ -333,14 +333,24 @@ app.frame("/", async (c) => {
     )}&pfpUrl=${encodeURIComponent(pfpUrl)}`
   )}`;
   
-
+ // بررسی URL برای تشخیص حالت Embed
+ const isEmbed = c.req.url.includes("/~/compose");
   // چاپ اطلاعات برای بررسی (اختیاری)
   console.log("Local Data for User:", JSON.stringify(localData, null, 2));
   console.log("Generated Cast URL:", longComposeCastUrl);
   console.log("Shared Page2 URL:", page2Url);
   console.log("Username:", username);
 console.log("Profile Picture URL:", pfpUrl);
-
+ // دکمه‌های نمایش داده‌شده بر اساس Embed بودن یا نبودن
+ const intents = isEmbed
+ ? [
+     <Button.Link href="https://warpcast.com/jeyloo">Tip Me</Button.Link>, // تنها دکمه‌ای که در Embed نمایش داده می‌شود
+   ]
+ : [
+     <Button value="page2">My State</Button>,
+     <Button.Link href={longComposeCastUrl}>Share</Button.Link>,
+     <Button.Link href="https://warpcast.com/jeyloo">Tip Me</Button.Link>, // تمام دکمه‌ها برای فریم اصلی
+   ];
 
   // بازگشت پاسخ
   return c.res({
@@ -501,10 +511,7 @@ console.log("Profile Picture URL:", pfpUrl);
         )}
       </div>
     ),
-    intents: [
-      <Button value="page2">My State</Button>,
-      <Button.Link href={longComposeCastUrl}>Share</Button.Link>,
-    ],
+    intents,
   });
 });
 
