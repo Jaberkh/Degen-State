@@ -384,7 +384,7 @@ console.log("Profile Picture URL:", pfpUrl);
         <div
           style={{
             position: "absolute",
-            top: "75%",
+            top: "74%",
             left: "56%",
             transform: "translate(-50%, -50%)",
             justifyContent: "flex-start",
