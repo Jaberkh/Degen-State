@@ -326,7 +326,7 @@ app.frame("/", async (c) => {
   const page2Url = `https://degen-state-1.onrender.com/?fid=${encodeURIComponent(fid)}&username=${encodeURIComponent(username)}&pfpUrl=${encodeURIComponent(pfpUrl)}&${tippedUsersData}`;
 
   const longComposeCastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
-    "Check Your Degen State\n\nFrame By @jeyloo"
+    "Check Your Degen State\n\nFrame By @jeyloo.eth"
   )}&embeds[]=${encodeURIComponent(
     `https://degen-state-1.onrender.com/?hashid=${hashId}&fid=${fid}&username=${encodeURIComponent(
       username
