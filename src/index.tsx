@@ -268,8 +268,8 @@ app.frame("/", async (c) => {
   const urlParams = new URLSearchParams(c.req.url.split('?')[1]);
 
   // دریافت اطلاعات از URL یا Interactor
-  const fid = urlParams.get("fid") || interactor?.fid || "FID Not Available";
-  const username = urlParams.get("username") || interactor?.username || "Username Not Available";
+  const fid = urlParams.get("fid") || interactor?.fid || "?";
+  const username = urlParams.get("username") || interactor?.username || "?";
   const pfpUrl = urlParams.get("pfpUrl") || interactor?.pfpUrl || "";
 
   // تولید hashid یکتا
@@ -281,12 +281,12 @@ app.frame("/", async (c) => {
   let lastTipAllowance: { date: string; tip_allowance: string; remaining_tip_allowance: string; tipped: string } | null = null;
 
   // پردازش اطلاعات Points
-  if (fid !== "FID Not Available") {
+  if (fid !== "??") {
     const pointsData = await fetchUserPoints(fid);
     if (Array.isArray(pointsData) && pointsData.length > 0) {
       points = pointsData[0].points;
     } else {
-      points = "No Points Available";
+      points = "0";
     }
 
     const lastAllowance = await fetchUserAllowances(fid);
@@ -384,9 +384,10 @@ console.log("Profile Picture URL:", pfpUrl);
         <div
           style={{
             position: "absolute",
-            top: "77%",
+            top: "75%",
             left: "56%",
             transform: "translate(-50%, -50%)",
+            justifyContent: "flex-start",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
