@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "frog dev",
-    "build": "tsc",
-    "start": "node build/index.js"
+    "dev": "vite",
+  "build": "vite build",
+  "start": "vite preview"
   },
   "dependencies": {
     "@hono/node-server": "latest",
