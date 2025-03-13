@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "skipLibCheck": true,
+    "module": "CommonJS",
+    "outDir": "dist",
+    "rootDir": ".",
 
     /* Bundler mode */
     "moduleResolution": "Node", // تغییر از "bundler" به "Node" برای سازگاری با Node.js
@@ -18,7 +19,6 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Build output */
-    "outDir": "build", // مسیر خروجی فایل‌های کامپایل شده
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
