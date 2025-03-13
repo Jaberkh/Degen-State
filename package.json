@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-   "start": "node index.tsx",
+   "start": "vercel dev",
     "build": "tsc"
   },
   "dependencies": {
@@ -17,5 +17,12 @@
     "@types/node": "^22.10.2",
     "ts-node": "^10.9.2",
     "typescript": "latest"
+  },
+
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ESNext",
+    "outDir": "dist",
+    "strict": true
   }
 }
