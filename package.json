@@ -3,9 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-  "build": "vite build",
-  "start": "vite preview"
+   "start": "node index.tsx",
+    "build": "tsc"
   },
   "dependencies": {
     "@hono/node-server": "latest",
